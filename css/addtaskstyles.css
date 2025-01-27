@@ -1,0 +1,74 @@
+
+body{
+    margin: 0;
+    font-family: san-sarif;
+    font-size: 18px;
+    background-color:#dee6e3; 
+}
+
+input[type=submit]{
+    background-color:#8082b7;
+}
+
+.header{
+            width:100%;
+            text-align:center;
+            padding:10px;
+            background-color:#9899c1;
+            
+            display:flex;
+        }
+        .logo {
+            width: 170px;
+            height: 47px;
+        }
+        .moveright{margin-left:auto;}
+        .header a {
+            color: black;
+            text-align: center;
+            padding: 20px 30px;
+            font-size: 25px;
+            margin-top: 0;
+            text-decoration: none;
+           
+        }
+        .content {
+            flex: 1;
+            padding: 40px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        form label {
+            font-weight: bold;
+        }
+        form input, form textarea, form select {
+            margin-bottom: 15px;
+        }
+        form button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .footer {
+            width:100%;
+            padding:20px;
+            text-align:right;
+            background-color:#8082b7;
+            
+        }
+        .footer a{
+              color: black;
+              text-align:left;
+              padding: 20px 60px;
+              font-size:25px;
+            margin-top:0;
+            text-decoration:none;
+        }
+        
+.userlogin{margin:0 auto;display:block;font-size:20px;font-family:san-serif;font-style:bold;background-color: #8082b7;}
+.loginbody{
+    background-color:#dee6e3;margin:0; padding:50px;
+}
+.logintble{background-color:#c2e5d8;height:375px; border:0; padding:30px 20px;margin: 40px;background-image: url('img/3525926.jpg');}
+.logintblreg{background-color:#c2e5d8;height:500px; border:0; padding:30px 20px;   margin: 40px;background-image: url('img/3525926.jpg');}
+        
