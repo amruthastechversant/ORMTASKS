@@ -1,238 +1,141 @@
 
 
-
-<cfset datasource="dsn_addressbook">
-<!-- Function to retrieve total contact count -->
-<cffunction name="qryContacts" access="public" returnType="numeric">
-   
-    <cfset totalCount=entityLoad("Task").count()>
-    <cfreturn totalcount>
-</cffunction>
-
-
-<cffunction  name="getContacts" returnType="query">
-    <cfargument  name="keyword" type="string">
-    <cfargument  name="limit" type="numeric">
-    <cfargument  name="offset" type="numeric">
-
-    <cfset criteria=entityNew("Task").initcriteria()>
-    <cfif len(trim(arguments.keyword))>
-        <cfset criteria=criteria.orlike("str_keyword",% argument.keyword %)>
-        <cfset criteria=criteria.orlike("atr_description",% argument.keyword %)>
-    </cfif>
-    <cfset tasks=criteria
-                .sort("int_task_priority,dt_task_due_date") 
-                .limit(arguments.limit)
-                .offset(arguments.offset)
-                .list()>
-            <cfreturn tasks>
-
-</cffunction>
-
-
-
-<cffunction  name="workinghours" returnType="query">
-
-        <cfargument  name="int_task_id" type="numeric">
-        <cfargument  name="int_user_id" type="numeric">
-        <cfargument  name="str_task_name" type="string">
-        <cfargument  name="int_task_status" type="string">
-        <cfargument  name="allotted_time" type="float">
-    <cfset var datasource="dsn_addressbook">
-    <cfquery name="workinghours" datasource="#datasource#">
-        insert into task_time(int_task_id,int_user_id,str_task_name,int_task_status,allotted_time)
-        values(
-                <cfqueryparam value="#arguments.int_task_id#" cfsqltype="cf_sql_integer">,
-                <cfqueryparam value="#arguments.int_user_id#" cfsqltype="cf_sql_integer">,
-                 <cfqueryparam value="#arguments.str_task_name#" cfsqltype="cf_sql_varchar">,
-                  <cfqueryparam value="#arguments.int_task_status#" cfsqltype="cf_sql_integer">,
-                  <cfqueryparam value="#arguments.allotted_time#" cfsqltype="cf_sql_float">
-        )
-    </cfquery>
-        <cfreturn workinghours>
-</cffunction>
-
-
-<cffunction name="getTodayTask" returnType="query">
-    <cfset var qryResults = "">
-    <cfset var datasource = "dsn_addressbook">
-    <cfquery name="qryResults" datasource="#datasource#">
-        SELECT 
-            c.int_task_id,
-            c.int_user_id,
-            c.str_task_name, 
-            c.str_task_description, 
-            c.int_task_priority,
-            c.dt_task_due_date, 
-            c.int_task_status,
-            s.status as task_status,
-            c.created_at,
-             c.is_recurring, 
-        c.recurrence_type, 
-        c.recurrence_end_date,
-        c.estimate_hours,
-            e.priority
-        FROM 
-            tasks AS c 
-             JOIN  priority AS e 
-             ON c.int_task_priority = e.id
-       
-            JOIN 
-            status AS s ON c.int_task_status = s.status 
-            where  CAST(c.dt_task_due_date AS DATE) = <cfqueryparam value="#Now()#" cfsqltype="cf_sql_date">
-          <cfif structKeyExists(form, "str_keyword") AND len(trim(form.str_keyword)) GT 0>
-            AND (
-                
-                str_task_name LIKE <cfqueryparam value="%#trim(form.str_keyword)#%" cfsqltype="cf_sql_varchar">
-                OR s.status LIKE <cfqueryparam value="%#trim(form.str_keyword)#%" cfsqltype="cf_sql_varchar">
-            )
-        </cfif> 
-        ORDER BY 
-            c.int_task_priority, c.dt_task_due_date
-        LIMIT <cfqueryparam value="#recordsPerPage#" cfsqltype="cf_sql_integer"> 
-        OFFSET <cfqueryparam value="#startRecord#" cfsqltype="cf_sql_integer">
-    </cfquery>
-    <cfreturn qryResults>
-</cffunction>
-
-
-<cffunction  name="pendingTask" access="public" returnType="query">
-        <cfset var qryResult="">
-        <cfset var datasource="dsn_addressbook">
-
-        <cfquery name="qryResult" datasource="#datasource#">
-                select int_task_id,int_user_id,str_task_name,str_task_description,int_task_priority,dt_task_due_date,int_task_status,created_at
-                from tasks
-                where int_task_status=1
-
-                <cfif structKeyExists(form, "str_keyword") AND len(form.str_keyword) GT 0>
-                    AND (
-                        str_task_name LIKE <cfqueryparam value="%#trim(form.str_keyword)#%" cfsqltype="cf_sql_varchar">
-                        OR str_task_description LIKE <cfqueryparam value="%#trim(form.str_keyword)#%" cfsqltype="cf_sql_varchar">
-                    )
-
-                    ORDER BY int_task_priority,dt_task_due_date
-
-                </cfif>
-        </cfquery>
-            <cfreturn qryResult> 
-</cffunction>
-
-
-
-
-<cfparam name="url.userId" default="0">
-<cfquery name="contactDetails" datasource="dsn_addressbook">
-    SELECT int_task_id,int_user_id,str_task_name,str_task_description,int_task_priority,dt_task_due_date,int_task_status,is_recurring,recurrence_type,recurrence_end_date,created_at
-    FROM tasks
-    WHERE int_task_id  = <cfqueryparam value="#url.userId#" cfsqltype="cf_sql_integer">
-</cfquery>
-
-
-<cffunction name="setDefaultValues" access="public" returnType="void">
-    <cfset datasource = "dsn_addressbook">
-    <cfparam name="form.currentPage" default="1">
-    <cfparam name="form.recordsPerPage" default="4">
-
-    <!-- Determine the current page based on URL or form input -->
-    <cfif structKeyExists(URL, "currentPage")>
+  <cfif structKeyExists(URL, "currentPage")>
         <cfset currentPage = val(URL.currentPage)>
     <cfelseif structKeyExists(form, "currentPage")>
         <cfset currentPage = val(form.currentPage)>
     <cfelse>
         <cfset currentPage = 1>
     </cfif>
+<cfset recordsPerPage =4>
 
-    <!-- Set records per page and calculate starting record -->
-    <cfset recordsPerPage = val(form.recordsPerPage)>
-    <cfset startRecord = (currentPage - 1) * recordsPerPage>
-    <cfset totalContacts = qryContacts()>
-    <cfset totalPages = ceiling(totalContacts / recordsPerPage)>
-</cffunction>
+<!--- Calculate the offset for pagination --->
+<cfset offset = (currentPage - 1) * recordsPerPage>
 
+<!--- Fetch tasks with pagination --->
 
-<cffunction  name="getResults" access="public" returnType="query">
-<cfquery name="qryPendingStatus" datasource="#datasource#">
-    SELECT int_task_id,str_task_name,str_task_description,dt_task_due_date,int_task_status
-    FROM tasks
-    WHERE  1=1
-       
-    <cfif structKeyExists(form, "str_keyword") AND len(trim(form.str_keyword)) GT 0>
-        AND (
-            
-             str_task_name LIKE <cfqueryparam value="%#trim(form.str_keyword)#%" cfsqltype="cf_sql_varchar">
-            OR CAST(int_task_status AS CHAR) LIKE <cfqueryparam value="%#trim(form.str_keyword)#%" cfsqltype="cf_sql_varchar">
-        )
-    </cfif>
-    ORDER BY int_task_id
-    LIMIT <cfqueryparam value="#startRecord#" cfsqltype="cf_sql_integer">, 
-          <cfqueryparam value="#recordsPerPage#" cfsqltype="cf_sql_integer">
-</cfquery>
-    <cfreturn qryPendingStatus>
-</cffunction>
+<cfif structKeyExists(form, "str_keyword") AND len(trim(form.str_keyword)) GT 0>
+    <cfset keyword =  "%" & trim(form.str_keyword) & "%">
+    <cfset tasks = ormExecuteQuery(
+    "FROM Tasks t WHERE t.str_task_name LIKE :keyword OR t.int_task_status.status LIKE :keyword ORDER BY t.int_task_priority ASC",
+    { keyword = keyword }, 
+    { maxResults = recordsPerPage, offset = offset }
+)>
+    <cfset totalTasks =arrayLen(tasks)>
+ 
+    <cfelse>
+    <cfset tasks=entityLoad("Tasks", {}, "int_task_priority ASC", {maxresults=recordsPerPage, offset=offset})>
+    <cfset totalTasks = ormExecuteQuery("select count(id) from Tasks", true)>
+</cfif>
+<cfset totalPages = ceiling(totalTasks / recordsPerPage)>
 
 
-<cffunction name="getDueDateAlert" output="false" returnType="string">
-    <cfargument name="dueDate" type="date" required="true">
-   
+<cffunction  name="getworkinghours" access="public" returntype="any">
 
-
-
-    <cfset var today = CreateDateTime(Year(Now()), Month(Now()), Day(Now()), 0, 0, 0)>
-    <cfset var tomorrow = DateAdd("d", 1, today)>
-    <cfset var alertMessage = "">
-
-
-    <cfset var dueDateNormalized = CreateDateTime(Year(arguments.dueDate), Month(arguments.dueDate), Day(arguments.dueDate), 0, 0, 0)>
-
-    <cfif DateCompare(dueDateNormalized, today) EQ 0>
-        <cfset alertMessage = "Task Due Date is today">
-    <cfelseif DateCompare(dueDateNormalized, tomorrow) EQ 0>
-        <cfset alertMessage = "Task Due Date is tomorrow">
-    </cfif>
-
-    <cfreturn alertMessage>
-
+    <cfargument  name="taskID" type="integer">  
     
-   
+    <cfset taskTimes = EntityLoad("TaskTime", {"int_task_id" = taskID})>
+    
+    <cfset totalWorkingHours = 0>
+    <cfloop array="#taskTimes#" index="timeLog">
+        <cfset totalWorkingHours = totalWorkingHours+timeLog.getWorking_hours()>
+    </cfloop>
+
+   <cfreturn totalWorkingHours>
 </cffunction>
+
+<cffunction  name="getTaskLogs" access="public" returntype="any">
+     <cfargument  name="taskID" type="integer"> 
+    <cfset taskTimes = EntityLoad("TaskTime", {"int_task_id" = taskID})>
+
+    <cfreturn taskTimes>
+
+</cffunction>
+
+                       
+<!---<cfdump  var="#Tasks[1].getInt_task_priority().getId()#">--->
+
+<cffunction name="getTodayTask" returnType="array">
+    
+    <cfif structKeyExists(form, "str_keyword") AND len(trim(form.str_keyword)) GT 0>
+    <cfset keyword = trim(form.str_keyword)>
+    <cfelse>
+        <cfset keyword = "">
+    </cfif>
+    
+    <cfset queryFilters = structNew()>
+    <cfset queryFilters["dt_task_due_date"] = Now()>
+    
+    <cfif len(keyword) GT 0>
+        <cfset queryFilters["str_task_name"] = "LIKE '%#keyword#%'">
+        <cfset queryFilters["s.status"] = "LIKE '%#keyword#%'">
+    </cfif>
+
+    <cfset tasks = EntityLoad("Tasks", queryFilters, "int_task_priority ASC, dt_task_due_date ASC")>
+
+    <cfreturn tasks>
+</cffunction>
+
+
+<cffunction name="pendingTask" access="public" returnType="array" output="false">
+    <cfset var tasks = []>
+    <cfset status = entityLoad("Status", 1, true)>
+    <cfset var filters = { int_task_status = 1 }>
+    
+    <cfset var keyword = "" />
+
+    <cfif structKeyExists(form, "str_keyword") AND len(trim(form.str_keyword)) GT 0>
+        <cfset keyword = "%" & trim(form.str_keyword) & "%">
+    </cfif>
+   
+   <cfset tasks = entityLoad("Tasks", { int_task_status = status })>
+  
+    <cfif len(keyword)>
+        <cfset tasks = arrayFilter(tasks, function(task) {
+            return findNoCase(trim(form.str_keyword), task.getStr_task_name()) OR 
+                   findNoCase(trim(form.str_keyword), task.getStr_task_description());
+        })>
+    </cfif>
+
+    <cfreturn tasks>
+</cffunction>
+
+
+
+
 <cffunction name="taskhours" returnType="struct" access="public">
     <cfargument name="working_hours" type="float" required="true">
     <cfargument name="int_task_id" type="numeric" required="true">
     
-  
     <cfset var result = {alertMessage = "", queryData = ""}>
 
-    <cfquery name="qryTaskhours" datasource="#datasource#">
-        SELECT 
-            t.int_task_id,
-            t.estimate_hours,
-            COALESCE(SUM(TL.working_hours), 0) AS total_working_hours
-        FROM tasks t
-        LEFT JOIN task_log tl ON t.int_task_id = tl.int_task_id
-        WHERE t.int_task_id = <cfqueryparam value="#arguments.int_task_id#" cfsqltype="cf_sql_integer">
-        GROUP BY t.estimate_hours, t.int_task_id
-    </cfquery>
-    
-    
-    <cfif qryTaskhours.recordCount>
-        <cfset var estimate_hours = qryTaskhours.estimate_hours>
-        <cfset var total_working_hours = qryTaskhours.total_working_hours + arguments.working_hours>
-        
-        <cfif total_working_hours GT estimate_hours>
-            <cfset result.alertMessage = "Working hours exceeded estimated hours">
-        </cfif>
-    </cfif>
-    
+    <cfset task = EntityLoadByPK("Tasks", arguments.int_task_id)>
+    <cfset taskLog = EntityLoad("TaskLog", {"int_task_id" = arguments.int_task_id})>
 
-    <cfset result.queryData = qryTaskhours>
-    
+    <cfset totalWorkingHours = 0>
+    <cfloop array="#taskLog#" index="log">
+        <cfset totalWorkingHours = totalWorkingHours + log.working_hours>
+    </cfloop>
+
+    <cfset totalWorkingHours = totalWorkingHours + arguments.working_hours>
+
+    <cfif totalWorkingHours GT task.estimate_hours>
+        <cfset result.alertMessage = "Working hours exceeded estimated hours">
+    </cfif>
+
+    <cfset result.queryData = taskLog>
+
     <cfreturn result>
 </cffunction>
 
 
-<cfset setDefaultValues()>
-<cfset getResults()>
-<cfset tasks=getContacts()>
+
+   
+
+<!--- <cfset getResults()> --->
+
+
+
+
 
 

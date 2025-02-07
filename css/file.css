@@ -1,0 +1,128 @@
+
+
+input[type=submit]{
+    background-color:#8082b7;
+}
+.indextable{background-color:#dee6e3; color:black;border:1px;}
+.userlogin{margin:0 auto;display:block;font-size:20px;font-family:san-serif;font-style:bold;background-color: #8082b7;}
+.loginbody{
+    background-color:#dee6e3;margin:0; padding:50px;
+}
+.logintble{background-color:#c2e5d8;height:375px; border:0; padding:30px 20px;margin: 40px;background-image: url('img/3525926.jpg');}
+.logintblreg{background-color:#c2e5d8;height:500px; border:0; padding:30px 20px;   margin: 40px;background-image: url('img/3525926.jpg');}
+.header{
+    width:100%;
+    text-align:center;
+    padding:10px;
+    background-color:#9899c1;
+    font-family:san-sarif;
+    display:flex;
+}
+.sidebar{
+    height: 100%;
+    width: 160px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    padding-top: 20px;
+  }
+  
+  .sidebar a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+  }
+  
+  .sidebar a:hover {
+    color: #f1f1f1;
+  }
+
+  @media screen and (max-height: 450px) {
+    .sidebar {padding-top: 15px;}
+    .sidebar a {font-size: 18px;}
+  }
+  .todaystasktable{ font-family:san-sarif;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.indextable{background-color:white; color:black;}
+.headdiv{text-align:center;}
+
+
+.logo{width: 170px;height: 47px;}
+.header a{
+      color: black;
+      text-align: center;
+      padding: 20px 30px;
+      font-size: 25px;
+    margin-top:0;
+    text-decoration:none;
+    
+}
+.moveright{margin-left: auto;}
+.header a:hover,.footer a:hover{
+    background-color:lightgrey;
+}
+
+.align {
+    margin:0;
+    width:100%;
+    background:grey;
+}
+.footer {
+    width:100%;
+    padding:20px;
+    text-align:right;
+    background-color:#8082b7;
+    
+}
+.footer a{
+      color: black;
+      text-align:left;
+      padding: 20px 60px;
+      font-size:25px;
+    margin-top:0;
+    text-decoration:none;
+}
+.alignRight{
+text-align:right;
+width:20%;
+}
+#age{width:30px;}
+
+label span{
+       display: inline-block;
+        text-align: right;
+        width: 60px;
+}
+    .selectBox{width: 160px;}
+    textarea{height: 100px;}
+.splitleft{
+    height:100%;
+    width:50%;
+    padding-top:20px;}
+.btnreg{ background-color:  #8082b7;}
+
+.login{
+    background-color:#dee6e3;margin:0; padding:50px;
+}
+.signindiv{
+    margin:0 auto;display:block;font-size:30px;font-family:san-serif;font-style:bold;background-color: #8082b7;
+}
+.detail-box{background: linear-gradient(to right, #8291cf, #f1f2f3);border-radius:15px;}

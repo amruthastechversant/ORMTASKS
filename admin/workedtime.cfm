@@ -1,4 +1,7 @@
-<cfinclude template="../taskmanagement/usertaskboardaction.cfm">
+
+
+
+<cfinclude template="../usertaskboardaction.cfm">
 <cfif NOT structKeyExists(session, "user_id") OR session.user_id EQ "" OR session.user_id IS 0>
     <cflocation url="../userlogin.cfm" addtoken="false">
 </cfif>
@@ -10,7 +13,7 @@
     <cfset int_hours=form.hours>
     <cfset int_user_id = form.int_user_id> 
     <cfset comments=form.comments>
-    <cfset datasource = "dsn_addressbook">
+   
   
     
     <cfif Not isNumeric(int_task_id)>
@@ -27,20 +30,23 @@
     
         <cfset int_hours = NumberFormat(int_hours,"0.00" )>
     </cfif>
+
+    
      
-          
+    
+     
 <cftry>
-        
-        <cfquery datasource="#datasource#" name="insertTasklog">
-            insert into task_log(int_task_id,int_user_id,working_hours,str_comments)
-            values(
-                <cfqueryparam value="#int_task_id#" cfsqltype="cf_sql_integer">,
-                <cfqueryparam value="#int_user_id#" cfsqltype="cf_sql_integer">,
-                <cfqueryparam value="#int_hours#" cfsqltype="cf_sql_float">,
-                <cfqueryparam value="#comments#" cfsqltype="cf_sql_varchar">
-            )   
-        </cfquery>
-        
+
+        <cfset task_log= entityNew("TaskTime")>
+        <cfset task_log.setInt_task_id(int_task_id)>
+        <cfset task_log.setInt_user_id(int_user_id)>
+        <cfset task_log.setWorking_hours(int_hours)>
+        <cfset task_log.setStr_comments(comments)>
+        <cfset task_log.setDate(now())> 
+       
+        <cfset entitySave(task_log)>
+       
+              
             <cfif NOT structKeyExists(session, "successMsg")>
                 <cfset session.successMsg = structNew()>
             </cfif>
@@ -53,9 +59,10 @@
                     <cfset session.successMsg["#int_task_id#"]="comments added">
              </cfif> 
            
-        <cflocation  url="../taskmanagement/usertaskboard.cfm" addToken="false">
+        <cflocation  url="../usertaskboard.cfm" addToken="false">
         <cfcatch>
-        <cfoutput><p class="text-danger">Task ID: #int_task_id# not found or user mismatch.</p></cfoutput>
+        
+        <cfoutput><p class="text-danger">Task ID: #int_task_id# not found or user mismatch.#cfcatch#</p></cfoutput>
         </cfcatch>
 </cftry>
 

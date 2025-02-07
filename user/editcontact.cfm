@@ -16,7 +16,7 @@
             <a href="">Home</a>
             <a href="fullcontacts.cfm">Contacts</a>
             <a href="addContact.cfm">Create Contact</a>
-            <a href="userlogout.cfm" class="moveright">Log out</a>
+            <a href="../userlogout.cfm" class="moveright">Log out</a>
         </div>
 
         <div class="headdiv">

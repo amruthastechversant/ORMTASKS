@@ -46,8 +46,8 @@
     </cfif>
 </cfif>
 
-<cfif NOT (structKeyExists(form, "completedtasks") OR structKeyExists(form, "userpendingtask"))>
+<cfif  (structKeyExists(form, "completedtasks") OR structKeyExists(form, "userpendingtask"))>
   
-    <cflocation url="../admin/homepage.cfm" addtoken="false">
+    <cflocation url="admin/homepage.cfm" addtoken="false">
     
 </cfif>

@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact List</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../taskmanagement/css/addtaskstyles.css">
+    <link rel="stylesheet" href="../css/addtaskstyles.css">
 </head>
 <body>
     <!-- Header with navigation links -->
@@ -19,7 +19,7 @@
         <img src="../img/logo.png" alt="logo" class="logo">
         <a href="../admin/homepage.cfm">Home</a>
        <!--- <a href="approvedUserProfile.cfm">Profile</a>--->
-        <a href="../taskmanagement/addtask.cfm">Tasks</a>
+        <a href="../addtask.cfm">Tasks</a>
         <a href="addContact.cfm">Create Contact</a>
         
         <a href="../userlogin.cfm" class="moveright">Log out</a>

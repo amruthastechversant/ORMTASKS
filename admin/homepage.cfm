@@ -1,5 +1,5 @@
 
-<cfinclude  template="../taskmanagement/usertaskboardaction.cfm">
+<cfinclude  template="../usertaskboardaction.cfm">
 <cfoutput>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,7 +16,7 @@
 		<div class="header">
 			<img src="../img/logo.png" alt="logo" class="logo">
 			<a href="../user/approveduserprofile.cfm">Home</a>
-			<a href="../taskmanagement/addtask.cfm">Tasks</a>
+			<a href="../addtask.cfm">Tasks</a>
 			<a href="../user/fullcontacts.cfm">Contacts</a>
 			<a href="../userlogin.cfm" class="moveright">Log out</a>
    		 </div>
@@ -34,8 +34,8 @@
 		<div class="todaystasktable container col-lg-auto mt-3 mb-5">
 		<cfset TodaysTasks=getTodayTask()>
 			
-			<cfif TodaysTasks.recordCount GT 0>
-				<form action="../taskmanagement/updateTask.cfm" method="post">
+			<cfif arrayLen(TodaysTasks)>
+				<form action="../updateTask.cfm" method="post">
 					<table class="table table-bordered">
 					<button type="button" class="btn btn-info mb-3">Today's Tasks</button>
 						<tr>
@@ -48,11 +48,11 @@
 					<tbody>
 					<cfloop query="TodaysTasks">
 					<tr>
-						<td>#TodaysTasks.str_task_name#</td>
-						<td>#TodaysTasks.str_task_description#</td>
-						<td>#TodaysTasks.task_status#</td>
+						<td>#TodaysTasks.getStr_task_name()#</td>
+						<td>#TodaysTasks.getStr_task_description()#</td>
+						<td>#TodaysTasks.getTask_status()#</td>
 						<td>
-						<input type="checkbox" name="completedtasks" value="#TodaysTasks.int_task_id#">
+						<input type="checkbox" name="completedtasks" value="#TodaysTasks.getInt_task_id()#">
 						
 					
 						</td>
@@ -70,8 +70,8 @@
 
 		<div class= "pendingtasktable container col-lg-auto mt-3 mb-5" >
 			<cfset pendingTask=pendingTask()>
-			<cfif pendingTask.recordCount GT 0>
-				<form action="../taskmanagement/updateTask.cfm" method="POST">
+			<cfif arrayLen(pendingTask)>
+				<form action="../updateTask.cfm" method="POST">
 				<table class="table table-bordered">
 					<tr>
 						<th>Task Name</th>
@@ -81,14 +81,14 @@
 						<th style="width:50%">Mark As Completed</th>
 					</tr>
 
-					<tbody>
-						<cfloop query="pendingTask">
+					<tbody>					
+						<cfloop array="#pendingTask#" index="pTask">
 							<tr>
-								<td>#pendingTask.str_task_name#</td>
-								<td>#pendingTask.str_task_description#</td>
-								<td>#pendingTask.dt_task_due_date#</td>
+								<td>#pTask.getStr_task_name()#</td>
+								<td>#pTask.getStr_task_description()#</td>
+								<td>#pTask.getDt_task_due_date()#</td>
 								<td>
-									<input type="checkbox" name="userpendingtask"value="#pendingTask.int_task_id#">
+									<input type="checkbox" name="userpendingtask"value="#pTask.getInt_task_id()#">
 								</td>
 							</tr>
 						</cfloop>
@@ -98,7 +98,7 @@
 				</form>
 			</cfif>
 		</div>
-<cfinclude  template="../taskmanagement/footer.cfm">
+<cfinclude  template="../footer.cfm">
 </body>
 </html>
 </cfoutput>

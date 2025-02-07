@@ -1,5 +1,5 @@
 <cfif not structKeyExists(session, "userid")>
-    <cflocation url="userlogin.cfm">
+    <cflocation url="../userlogin.cfm">
 </cfif>
 
 <h2>My Contacts</h2>
