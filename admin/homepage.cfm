@@ -46,7 +46,7 @@
 						</tr>
 
 					<tbody>
-					<cfloop query="TodaysTasks">
+					<cfloop array="TodaysTasks">
 					<tr>
 						<td>#TodaysTasks.getStr_task_name()#</td>
 						<td>#TodaysTasks.getStr_task_description()#</td>

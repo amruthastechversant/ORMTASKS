@@ -44,32 +44,33 @@
         </thead>
         <tbody>
             <!-- Loop through the contact data and display each contact -->
-            <cfoutput query="contactData">
+            <cfoutput>
+            <cfloop array="#contactData#" index="contact">
                 <tr>
-                    <td>#str_firstname#</td>
-                    <td>#str_lastname#</td>
-                    <td>#title#</td>
-                    <td>#int_phone_no#</td>
+                    <td>#contact.getStr_firstname()#</td>
+                    <td>#contact.getStr_lastname()#</td>
+                    <td>#contact.getInt_education_id().getTITLE()#</td>
+                    <td>#contact.getInt_phone_no()#</td>
                     <td>
                         <!-- Conditionally display Edit and Delete buttons based on permissions -->
                    
                         <!-- Link to the contact details page with the contactId -->
                         <cfif ArrayContains(SESSION.permissions, 1)>
-                            <a href="userdetails.cfm?contactId=#int_contact_id#" class="btn btn-primary btn-sm">
+                            <a href="userdetails.cfm?contactId=#contact.getInt_contact_id()#" class="btn btn-primary btn-sm">
                                 View 
                             </a>
                         </cfif>
                 
                         <!-- Edit Button (Permission ID: 2) -->
                         <cfif ArrayContains(SESSION.permissions, 2)>
-                            <a href="addContact.cfm?contactId=#int_contact_id#" class="btn btn-warning btn-sm">
+                            <a href="addContact.cfm?contactId=#contact.getInt_contact_id()#" class="btn btn-warning btn-sm">
                                 Edit
                             </a>
                         </cfif>
                         
                         <!-- Delete Button (Permission ID: 3) -->
                         <cfif ArrayContains(SESSION.permissions, 3)>
-                            <a href="deletecontact.cfm?contactId=#int_contact_id#" 
+                            <a href="deletecontact.cfm?contactId=#contact.getInt_contact_id()#" 
                                class="btn btn-danger btn-sm" 
                                onclick="return confirm('Are you sure you want to delete this contact?');">
                                 Delete
@@ -78,7 +79,9 @@
                         </cfif>
                     </td>
                 </tr>
+            </cfloop>
             </cfoutput>
+
         </tbody>
     </table>
 

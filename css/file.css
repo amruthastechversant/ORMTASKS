@@ -3,7 +3,7 @@
 input[type=submit]{
     background-color:#8082b7;
 }
-.indextable{background-color:#dee6e3; color:black;border:1px;}
+.indextable{background-color:#c8deec; color:black;border:1px;}
 .userlogin{margin:0 auto;display:block;font-size:20px;font-family:san-serif;font-style:bold;background-color: #8082b7;}
 .loginbody{
     background-color:#dee6e3;margin:0; padding:50px;
@@ -61,7 +61,6 @@ input[type=submit]{
 
 
 
-.indextable{background-color:white; color:black;}
 .headdiv{text-align:center;}
 
 

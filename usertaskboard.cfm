@@ -9,9 +9,9 @@
 </head>
 <body>
     <cfinclude template="header.cfm">
-    <div class="d-flex justify-content-end">                       
+   <!--- <div class="d-flex justify-content-end">                       
         <a href="getWorkingHours.cfm" class="btn btn-outline-info btn-lg  my-2 ms-3 me-4 text-success">USER TASK DETAILS</a>
-    </div>
+    </div>--->
     <div class="container mt-5">
             <h2 class="text-center">Tasks Sorted by Priority</h2>
             <form class="d-flex justify-content-between align-items-center" action="usertaskboard.cfm" method="post">
@@ -35,9 +35,11 @@
                                         <cfelseif task.getInt_task_priority().getPriority() EQ "Medium">Medium
                                         <cfelse>Low
                                         </cfif>
+                                        
                                     </strong>
                                     <i class="bi-three-dots-vertical text-white " style="cursor: pointer;"  data-task-id="#task.getInt_task_id()#" data-user-id="#task.getInt_user_id()#"  data-bs-toggle="modal" data-bs-target="##estimateModal"></i>
                                 </div> 
+
                             </div>
                                 <div class="card-body">
                                     <h4 class="card-title">#task.getInt_task_id()#</h4>

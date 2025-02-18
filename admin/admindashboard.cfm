@@ -43,24 +43,25 @@
                 </tr>
             </thead>
             <tbody>
-                <cfif qryPendingUsers.recordCount>
-                    <cfloop query="qryPendingUsers">
+                <cfif tblUser.recordCount>
+                    <cfloop array="tblUser" index="user">
                         <tr>
-                            <td>#id#</td>
-                            <td>#str_name#</td>
-                            <td>#str_phone#</td>
-                            <td>#str_username#</td>
+                            <td>#user.getId()#</td>
+                            <td>#user.getStr_name()#</td>
+                            <td>#user.getStr_phone()#</td>
+                            <td>#user.getStr_username()#</td>
                             <td>
-                                <cfquery name="qryUserPermissions" datasource="#datasource#">
-                                    SELECT int_permission_id FROM tbl_user_permissions
-                                    WHERE int_user_id = <cfqueryparam value="#id#" cfsqltype="cf_sql_integer">
-                                </cfquery>
+                                <!--- <cfquery name="qryUserPermissions" datasource="#datasource#">
+                                   SELECT int_permission_id FROM tbl_user_permissions
+                                     WHERE int_user_id = <cfqueryparam value="#id#" cfsqltype="cf_sql_integer">
+                                 </cfquery>--->
+                                
                                 <cfset variables.int_user_permission_list = valuelist(qryUserPermissions.int_permission_id)>
 
                                 <form action="savepermission.cfm" method="post" class="text-center">
-                                    <cfloop query="qryGetPermissionOptions">
+                                    <cfloop array="permissionList" index="permission">
                                         <input type="checkbox" class="form-check-input" name="int_permission_id_list" 
-                                            value="#qryGetPermissionOptions.permissionid#" 
+                                            value="#permission.getInt_permission_id()#" 
                                             id="int_permission_id_list_#qryPendingUsers.Id#"
                                             <cfif ListContains("#variables.int_user_permission_list#", qryGetPermissionOptions.permissionid)>checked</cfif>>
                                         <label for="int_permission_id_list_#qryPendingUsers.Id#" class="form-check-label">

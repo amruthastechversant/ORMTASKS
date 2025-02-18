@@ -6,16 +6,20 @@
 <cfset recordsPerPage = val(form.recordsPerPage)>
 <cfset startRecord = (currentPage - 1) * recordsPerPage>
 
+
+<cfset tblUser=entityLoad("user")>
 <!---getting permission options from sqltable--->
-<cffunction  name="getPermissionOptions" access="public" returnType="query">
-<cfquery name="qryGetPermissionOptions" datasource="#datasource#">
-    SELECT int_permission_id AS permissionid, str_permissions AS permission
-    FROM tbl_permissions
-</cfquery>
-<cfreturn qryGetPermissionOptions>
+<cffunction  name="getPermissionOptions" access="public" returnType="any">
+    <cfset permissionList=entityLoad("tbl_permissions")>
 </cffunction>
 
+
+<cffunction  name="permissions" access="public" returnType="any">
+     <cfargument  name="permissionid" type="integer">
+    <cfset permissionList=entityLoad("tbl_permissions",{"int_user_id"=permissionid})>
+</cffunction>
 <cfset getPermissionOptions()>
+<cfset permissions()>
 
 <cffunction  name="getUserCounts" access="public" returnType="query">
 <cfquery name="qryUserCounts" datasource="#datasource#">

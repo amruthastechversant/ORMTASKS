@@ -2,31 +2,25 @@
 <cfif NOT structKeyExists(session, "user_id") OR session.user_id EQ "" OR session.user_id IS 0>
     <cflocation url="../userlogin.cfm" addtoken="false">
 </cfif>
-<!-- Function to retrieve total contact count -->
+
+<cfset contacts=entityLoad("contacts")>
 <cffunction name="qryContacts" access="public" returnType="numeric">
-    <cfquery name="qryTotalContacts" datasource="#datasource#">
-        SELECT COUNT(int_contact_id) AS totalCount
-        FROM contacts
-    </cfquery>
-    <cfreturn qryTotalContacts.totalCount>
+<cfset  var totalCount=0>
+<cfset totalCount =ormExecuteQuery("select count(int_contact_id) from contacts", true)>
+    <cfreturn totalCount>
 </cffunction>
 
-<cfparam name="url.contactId" default="0">
+<!--- <cfparam name="url.contactId" default="0"> 
 <cfquery name="contactDetails" datasource="dsn_addressbook">
     SELECT str_firstname, str_lastname, int_education_id, str_profile, int_age, str_gender, int_phone_no, str_hobbies, str_address, int_contact_id
     FROM contacts
     WHERE int_contact_id = <cfqueryparam value="#url.contactId#" cfsqltype="cf_sql_integer">
-</cfquery>
+</cfquery>--->
+<!---  
+<cffunction  name="contactDetails" access="public" returntype="any">
 
-
-<cfquery name="getEducation" datasource="dsn_addressbook">
-    SELECT education.title
-    FROM contacts
-    JOIN education
-    ON contacts.int_education_id = education.id
-    WHERE contacts.int_contact_id = <cfqueryparam value="#contactId#" cfsqltype="cf_sql_integer">
-</cfquery>
-
+</cffunction>--->
+                                                 
 
 
 
@@ -34,7 +28,7 @@
 <cffunction name="setDefaultValues" access="public" returnType="void">
     <cfset datasource = "dsn_addressbook">
     <cfparam name="form.currentPage" default="1">
-    <cfparam name="form.recordsPerPage" default="10">
+    <cfparam name="form.recordsPerPage" default="10" type="numeric">
 
     <!-- Determine the current page based on URL or form input -->
     <cfif structKeyExists(URL, "currentPage")>
@@ -62,22 +56,22 @@
 
 
 <!-- Function to retrieve contacts based on pagination -->
-<cffunction name="getContacts" returnType="query">
-    <cfset var qryResults = "">
-    <cfset var datasource = "dsn_addressbook">
-    <cfquery name="qryResults" datasource="#datasource#">
-        SELECT c.str_firstname, c.str_lastname, c.int_education_id,c.str_profile, c.int_age, c.str_gender, c.int_phone_no, c.str_hobbies, c.str_address, c.int_contact_id,e.title
-        FROM contacts AS c
-        join education AS e
-     ON c.int_education_id = e.ID
-    WHERE c.int_education_id = e.ID
-        ORDER BY int_contact_id
-        LIMIT <cfqueryparam value="#startRecord#" cfsqltype="cf_sql_integer">, <cfqueryparam value="#recordsPerPage#" cfsqltype="cf_sql_integer">
-    </cfquery>
-    <cfreturn qryResults>
-
-    
+<cffunction name="getContacts" returnType="array">
+    <cfargument  name="startRecord" type="numeric" required="true">
+    <cfargument  name="recordsPerPage" type="numeric" required="true">
+  
+   <cfset contactList = entityLoad("contacts", {}, {
+        orderby = "int_contact_id ASC",
+        offset = arguments.startRecord,
+        maxResults = arguments.recordsPerPage
+    })>
+   <cfreturn contactList>
 </cffunction>
+
+   
+
+
+
 
 <!-- Get the contact data based on current page -->
 
@@ -98,5 +92,5 @@
     </cfloop>
 </cffunction>
 <cfset setDefaultValues()>
-<cfset contactData = getContacts()>
+<cfset contactData = getContacts(startRecord=startRecord,recordsPerPage=recordsPerPage)>
 <cfset setUserPermissions(user_id=session.user_id)>

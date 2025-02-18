@@ -28,9 +28,16 @@
                 </cfif>
             </cfif>
             </div>
-        <div class="errordiv text-danger text-center">
-            #variables.error_msg#
+            
+            <div class="errordiv text-danger text-center">
+        
+        <cfif arrayLen(variables.error_msg)>
+            <cfloop array="#variables.error_msg#" index="msg">    
+            #msg#<br>
+            </cfloop>
+            </cfif>
         </div>
+    
         <form action="" method="post" class="form-group">
             
             <label for="str_task_name">Task Name:</label>
@@ -42,61 +49,90 @@
             <textarea name="str_task_description" id="str_task_description" class="form-control" rows="4" >#variables.str_task_description#</textarea>
          
             <label for="int_task_priority">Task Priority:</label>
-                <cfif NOT structKeyExists(url, "userId")>
+                <cfif arrayLen(priorityList) GT 0>
+
             <!-- Add Case -->
-                        <select name="int_task_priority" id="int_task_priority" class="selectBox">
-                          <option value="" disabled selected>Select Priority</option>
-                            <cfloop query="variables.qryGetPriorityOptions">
-                                <option value="#variables.qryGetPriorityOptions.id#">
-                                    #variables.qryGetPriorityOptions.priority#
-                                </option>
-                             </cfloop>
-                        </select>
+<!---             <cfloop array="#priorityList#" index="priority">
+            <!---<cfdump  var="#(priority) #">
+            <cfdump  var="#GetMetaDatA(priority).FUNCTIONS #">--->
+
+            <CFSET VAL = GetMetaDatA(priority).FUNCTIONS.FILTER(FUNCTION(ITEM){
+                RETURN ITEM.NAME == "id"
+            })>
+                  <cfdump var="#VAL#">
+                        
+                        </cfloop> --->
+                <select name="int_task_priority" id="int_task_priority" class="selectBox">
+                    <option value="" disabled selected>Select Priority</option>
+                        <cfloop array="#priorityList#" index="priority">
+
+                      <CFSET VAL = GetMetaData(priority).functions.filter(function(item){
+                            return item.name == "id"
+                         })>
+                            <cfif structKeyExists(priority,"getId")>
+                                <option value="#priority.getId()#">#priority.getPriority()#</option>
+                            </cfif>
+                        </cfloop>
+
+                </select>
+                
+
+
                         <cfelse>
                         <select name="int_task_priority" id="int_task_priority" class="selectBox">
-                            <cfloop query="qryGetPriorityOptions">
+                            <cfloop array="priorityList" index="priority">
                                 <cfset selected = "">
                                 <!-- Determine selected option -->
-                                <cfloop query="getpriority">
-                                    <cfif qryGetPriorityOptions.priority EQ getpriority.priority>
-                                        <cfset selected = "selected">
+                                <cfloop array="#priorityList#" index="priority">
+                                <CFSET VAL = GetMetaData(priority).functions.filter(function(item){
+                                     return item.name == "id"
+                                })>
+
+                               
+                                    <cfif structKeyExists(priority, "getId")>
+                                        <option value="#priority.getId()#">#priority.getPriority()#</option>
                                     </cfif>
-                                </cfloop>
-                                <option value="#qryGetPriorityOptions.id#" #selected#>
-                                    #qryGetPriorityOptions.priority#
+                                
+                                <option value="#priority.getId()#" #selected#>
+                                    #priority.getPriority()#
                                 </option>
+                                </cfloop>
                             </cfloop>
                         </select>
                         
                     </cfif>
                 
 
-
             <label for="int_task_status">Task status:</label>
-                <cfif NOT structKeyExists(url, "userId")>
+                <cfif arrayLen(statusList) GT 0>
             <!-- Add Case -->
                         <select name="int_task_status" id="int_task_status" class="selectBox">
                           <option value="" disabled selected>Select status</option>
-                            <cfloop query="variables.qryGetStatusOptions">
-                                <option value="#variables.qryGetStatusOptions.id#">
-                                    #variables.qryGetStatusOptions.status#
+                            <cfloop array="#statusList#" index="status">
+                                <CFSET VAL = GetMetaData(priority).functions.filter(function(item){
+                                    return item.name == "id"
+                                })>
+                                <cfif structKeyExists(status, "getId")>
+                                <option value="#status.getId()#">
+                                    #status.getStatus()#
                                 </option>
+                                </cfif>
                              </cfloop>
                         </select>
                         <cfelse>
 
                         <select name="int_task_status" id="int_task_status" class="selectBox">
-                            <cfloop query="qryGetStatusOptions">
+                            <cfloop array="#statusList#" index="status">
                                 <cfset selected = "">
                                 <!-- Determine selected option -->
-                                <cfloop query="getstatus">
-                                    <cfif qryGetStatusOptions.status EQ getstatus.status>
+                                <cfloop array="#statusList#" index="status">
+                                    <cfif structKeyExists(status, "getId")>
                                         <cfset selected = "selected">
                                     </cfif>
+                                    <option value="#status.getId()#" #selected#>
+                                        #status.getStatus()#
+                                    </option>
                                 </cfloop>
-                                <option value="#qryGetStatusOptions.id#" #selected#>
-                                    #qryGetStatusOptions.status#
-                                </option>
                             </cfloop>
                         </select>
                      </cfif>

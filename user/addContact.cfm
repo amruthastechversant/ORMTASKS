@@ -19,7 +19,7 @@
             <a href="../admin/homepage.cfm">Home</a>
             <a href="fullcontacts.cfm">Contacts</a>
             <a href="addContact.cfm">Create Contact</a>
-            <a href="../userlogout.cfm" class="moveright">Log out</a>
+            <a href="userlogout.cfm" class="moveright">Log out</a>
         </div>
         <div class="headdiv">
             <h1>ADD CONTACT FORM</h1>
@@ -45,67 +45,72 @@
             <table class="indextable mx-auto">
                 <tr>
                     <td class="alignRight"><label for="firstname">First Name</label></td>
-                    <td><input type="text" id="firstname" name="firstname" value="#variables.str_firstname#"></td>
+                    <td><input type="text" id="firstname" name="firstname" value="# variables.contacts.getStr_firstname()#"></td>
                     <td class="alignRight"><label for="lastname">Last Name</label></td>
-                    <td><input type="text" id="lastname" name="lastname" value="#variables.str_lastname#"></td>
+                    <td><input type="text" id="lastname" name="lastname" value="#variables.contacts.getStr_lastname()#"></td>
                 </tr>
 
                 <tr>
                     <td class="alignRight"> <label for="Education">Education</label></td>
+                    
                      <td>
-                        <cfif NOT structKeyExists(url, "contactId")>
-            <!-- Add Case -->
+                        <cfif  structKeyExists(url, "contactId")>
                         <select name="education" id="Education" class="selectBox">
-                            <cfloop query="variables.qryGetEducationOptions">
-                                <option value="#variables.qryGetEducationOptions.ID#">
-                                    #variables.qryGetEducationOptions.education#
+                            <cfloop array="#educations#" index="education">
+                           
+                                <option value="#education.getId()#">
+                                    
+                                    #education.getTITLE()#
                                 </option>
+
                              </cfloop>
                         </select>
                         <cfelse>
             <!-- Edit Case -->
-                        <select name="education" id="Education" class="selectBox">
-                            <cfloop query="qryGetEducationOptions">
+                         <select name="education" id="Education" class="selectBox">
+                            <cfloop array="#educations#" index="education">
                                 <cfset selected = "">
                                 <!-- Determine selected option -->
-                                <cfloop query="getEducation">
-                                    <cfif qryGetEducationOptions.education EQ getEducation.title>
+                                 <cfloop array="#educations#" index="education">
+                                    
+                                    <cfif education.getId() EQ int_education_id>
                                         <cfset selected = "selected">
                                     </cfif>
                                 </cfloop>
-                                <option value="#qryGetEducationOptions.ID#" #selected#>
-                                    #qryGetEducationOptions.education#
+                                <option value="# education.getId()#" #selected#>
+                                    #education.getTITLE()#
                                 </option>
                             </cfloop>
                         </select>
+
                          </cfif>
 
                      </td>
                 </tr>
                 <tr>
                     <td class="alignRight"><label for="age">Age</label></td>
-                    <td colspan="3"><input type="number" id="age" name="age" value="#variables.int_age#"></td>
+                    <td colspan="3"><input type="number" id="age" name="age" value="#variables.contacts.getInt_age()#"></td>
                 </tr>
                 <tr>
                     <td class="alignRight"><label for="profile">Profile</label></td>
-                    <td colspan="3"><textarea rows="4" cols="40" id="profile" name="profile" wrap="soft">#variables.str_profile#</textarea></td>
+                    <td colspan="3"><textarea rows="4" cols="40" id="profile" name="profile" wrap="soft">#variables.contacts.getStr_profile()#</textarea></td>
                 </tr>
 
                 <tr>
                     <td class="alignRight"><label for="address">Address</label></td>
-                    <td colspan="3"><textarea rows="4" cols="40" id="address" name="address" wrap="soft">#variables.str_address#</textarea></td>
+                    <td colspan="3"><textarea rows="4" cols="40" id="address" name="address" wrap="soft">#variables.contacts.getStr_address()#</textarea></td>
                 </tr>
 
                 <tr>
                     <td class="alignRight"><label for="phoneno">Phone Number</label></td>
-                    <td colspan="3"><input type="text" id="phoneno" name="phoneno" maxlength="10" title="only numbers allowed" value="#variables.int_phone_no#"></td>
+                    <td colspan="3"><input type="text" id="phoneno" name="phoneno" maxlength="10" title="only numbers allowed" value="#variables.contacts.getInt_phone_no()#"></td>
                 </tr>
 
                 <tr>
                     <td class="alignRight"><label>Gender</label></td>
                     <td colspan="3">
-                        <input type="radio" id="genderM" name="gender" value="male" <cfif variables.str_gender is "male">checked="true"</cfif>><label for="genderM">Male</label>
-                        <input type="radio" id="genderF" name="gender" value="female" <cfif variables.str_gender is "female">checked="true"</cfif>><label for="genderF">Female</label>
+                        <input type="radio" id="genderM" name="gender" value="male" <cfif variables.contacts.getStr_gender() is "male">checked="true"</cfif>><label for="genderM">Male</label>
+                        <input type="radio" id="genderF" name="gender" value="female" <cfif variables.contacts.getStr_gender() is "female">checked="true"</cfif>><label for="genderF">Female</label>
                     </td>
                 </tr>
 
@@ -115,28 +120,28 @@
                     <cfif NOT structKeyExists(url, "contactId")>
                             <!-- Add Case -->
                             <input type="checkbox" id="reading" name="hobbies" value="Reading" 
-                                <cfif variables.str_hobbies EQ "Reading">checked</cfif>>
+                                <cfif variables.contacts.getStr_hobbies() EQ "Reading">checked</cfif>>
                             <label for="reading">Reading</label>
 
                             <input type="checkbox" id="travel" name="hobbies" value="Travelling" 
-                                <cfif variables.str_hobbies EQ "Travelling">checked</cfif>>
+                                <cfif variables.contacts.getStr_hobbies() EQ "Travelling">checked</cfif>>
                             <label for="travel">Travelling</label>
 
                             <input type="checkbox" id="music" name="hobbies" value="Music" 
-                                <cfif variables.str_hobbies EQ "Music">checked</cfif>>
+                                <cfif variables.contacts.getStr_hobbies() EQ "Music">checked</cfif>>
                             <label for="music">Music</label>
                         <cfelse>
                             <!-- Edit Case -->
                             <input type="checkbox" id="reading" name="hobbies" value="Reading" 
-                                <cfif ListFind(contactDetails.str_hobbies, "Reading", ",")>checked</cfif>>
+                                <cfif ListFind(variables.contacts.getStr_hobbies(), "Reading", ",")>checked</cfif>>
                             <label for="reading">Reading</label>
 
                             <input type="checkbox" id="travel" name="hobbies" value="Travelling" 
-                                <cfif ListFind(contactDetails.str_hobbies, "Travelling", ",")>checked</cfif>>
+                                <cfif ListFind(variables.contacts.getStr_hobbies(), "Travelling", ",")>checked</cfif>>
                             <label for="travel">Travelling</label>
 
                             <input type="checkbox" id="music" name="hobbies" value="Music" 
-                                <cfif ListFind(contactDetails.str_hobbies, "Music", ",")>checked</cfif>>
+                                <cfif ListFind(variables.contacts.getStr_hobbies(   ), "Music", ",")>checked</cfif>>
                             <label for="music">Music</label>
                         </cfif>
                     </td>

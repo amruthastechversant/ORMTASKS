@@ -17,12 +17,19 @@
     <cflocation url="fullcontacts.cfm" addtoken="false">
 </cfif>
 
-<!-- Perform the deletion -->
-<cfquery name="deleteContact" datasource="dsn_addressbook">
-    DELETE FROM contacts
-    WHERE int_contact_id = <cfqueryparam value="#contactId#" cfsqltype="cf_sql_integer">
-</cfquery>
+<!--- Perform the deletion 
+ <cfquery name="deleteContact" datasource="dsn_addressbook">
+--     DELETE FROM contacts
+--     WHERE int_contact_id = <cfqueryparam value="#contactId#" cfsqltype="cf_sql_integer">
+-- </cfquery>--->
 
+<cffunction  name="deleteContact" access="public " returnType="void"> 
+    <cfargument  name="int_contact_id" type="numeric">
+    <cfset var contact=entityLoad("Tasks",arguments.int_contact_id)>
+    <cfif isDefined(contact)>
+        <cfset entityDelete(contact)>
+    </cfif>
+</cffunction>
 <cfset successMessage = "Contact deleted successfully.">
 <cfoutput>#successMessage#</cfoutput>
 <!-- Redirect back to the contact list page -->

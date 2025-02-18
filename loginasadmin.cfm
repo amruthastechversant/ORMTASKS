@@ -12,29 +12,27 @@ saveContacts()--->
     <cfargument  name="username" type="string" required="true">
     <cfargument  name="password" type="string" required="true">
     <cfif structKeyExists(form, "login")>
-        <cfset datasource="dsn_addressbook">
-        <cfquery name="qryUser" datasource="#datasource#">
-            SELECT u.id,u.str_name, u.str_phone, u.str_username, r.str_user_role
-            FROM tbl_users AS u
-            INNER JOIN tbl_user_roles AS r
-             ON u.int_user_role_id = r.id
-            WHERE u.str_username = <cfqueryparam value="#username#" cfsqltype="cf_sql_varchar">
-            AND u.str_password = <cfqueryparam value="#password#" cfsqltype="cf_sql_varchar">
-            AND cbr_status = 'A'
-            AND r.str_user_role='admin'
-        </cfquery>
-     
-    <cfif qryUser.recordCount>
+        <cfset var admin =entityLoad("user",{str_username=arguments.username,str_password=arguments.password,cbr_status='A'})>
+    
+        <cfif arraylen(admin)>
+            <cfdump  var="#admin#">
+            <cfset admin[1].getUserRole().getStr_user_role() EQ "admin">
 
-        <cfset session.adminid = qryUser.id>
-        <cfset session.role = qryUser.str_user_role>
-        <cfset session.str_username = qryUser.str_username>
-        <cflocation url="admin/admindashboard.cfm">
-        
-    <cfelse>
-        <cfset session.error_msg="invalid credentials">
+            <cfset session.adminid=admin[1].getId()>
+            <cfset session.role=admin[1].getUserRole().getStr_user_role()>
+            <cfset session.str_username=admin[1].getStr_username()>
+            <cflocation  url="admin/admindashboard.cfm">
+
+        <cfelse>
+            <cfset session.error_msg="invalid credentials">
+
+        </cfif>
+
+        <cfelse>
+            <cfset session.error_msg="incorrect username and password">
+
     </cfif>
-</cfif>
+
 </cffunction>
 
 <cfset setDefaultValues()>

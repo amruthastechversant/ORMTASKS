@@ -12,12 +12,21 @@
     <cflocation url="usertaskboard.cfm" addtoken="false">
 </cfif>
 
-<!-- Perform the deletion -->
+<!--- Perform the deletion 
 <cfquery name="deleteContact" datasource="dsn_addressbook">
-    DELETE FROM tasks
-    WHERE int_task_id = <cfqueryparam value="#userId#" cfsqltype="cf_sql_integer">
-</cfquery>
+--     DELETE FROM tasks
+--     WHERE int_task_id = <cfqueryparam value="#userId#" cfsqltype="cf_sql_integer">
+-- </cfquery>--->
 
+
+<cffunction  name="deleteContact" access="public" returnType="void">
+<cfargument  name="int_task_id" type="numeric">
+    <cfset var contact=entityLoad("Tasks",arguments.int_task_id)>
+    <cfif isDefined(contact)>
+        <cfset entityDelete(contact)>
+    </cfif>
+
+</cffunction>
 <cfset successMessage = "Contact deleted successfully.">
 <cfoutput>#successMessage#</cfoutput>
 <!-- Redirect back to the contact list page -->

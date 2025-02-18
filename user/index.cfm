@@ -47,7 +47,7 @@
                     <td class="alignRight"><label for="Education">Education</label></td>
                     <td>
                         <select name="education" id="Education" multiple class="selectBox">
-                            <cfloop query="variables.qryGetEducationOptions">
+                            <cfloop array="variables.qryGetEducationOptions">
                                 <option value="#variables.qryGetEducationOptions.education#">#variables.qryGetEducationOptions.education#</option>
                             </cfloop>
                         </select>
