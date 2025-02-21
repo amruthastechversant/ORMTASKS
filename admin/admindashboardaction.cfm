@@ -1,42 +1,79 @@
-<cfset datasource="dsn_addressbook">
 <!---pagination--->
 <cfparam name="form.currentPage" default="1">
 <cfparam name="form.recordsPerPage" default="5">
-<cfset currentPage = val(structKeyExists(URL, "currentPage") ? URL.currentPage : form.currentPage)>
-<cfset recordsPerPage = val(form.recordsPerPage)>
-<cfset startRecord = (currentPage - 1) * recordsPerPage>
-
-
-<cfset tblUser=entityLoad("user")>
+<cfset variables.currentPage = val(structKeyExists(URL, "variables.currentPage") ? URL.variables.currentPage : form.variables.currentPage)>
+<cfset variables.recordsPerPage = val(form.recordsPerPage)>
+<cfset variables.offset = (currentPage - 1) * recordsPerPage>
+<cfset variables.user=entityLoad("user")>
 <!---getting permission options from sqltable--->
-<cffunction  name="getPermissionOptions" access="public" returnType="any">
-    <cfset permissionList=entityLoad("tbl_permissions")>
+<cfset variables.permissionOptions = getPermissionOptions()>
+
+<cfset variables.userCount=getUserCounts()>
+<cfset variables.totalPendingRecords = userCount.totalPending>
+<cfset variables.totalApprovedRecords = userCount.totalApproved>
+<cfset variables.totalPendingPages = Ceiling(variables.totalPendingRecords / variables.recordsPerPage)>
+<cfset variables.totalApprovedPages = Ceiling(variables.totalApprovedRecords / variables.recordsPerPage)>
+
+<cfset variables.qryPendingUsers = getPendingUsers()>
+<cfset variables.qryApprovedUsers = getApprovedUsers()>
+
+<!---Function Block ------------->
+<cffunction name="getPermissionOptions" access="public" returnType="array">
+    <cfset var permissionList = entityLoad("permissions")>
+    <cfreturn permissionList>
+</cffunction>
+
+<cffunction  name="getUserCounts" access="public" returnType="struct">
+    <cfset var result={}>
+    <cfset result.totalPending=arrayLen(entityLoad("user",{cbr_status='p'}))>
+    <cfset result.totalApproved=arrayLen(entityLoad("user",{cbr_status='A'}))>
+    <cfreturn result>
+</cffunction>
+
+<cffunction  name="getPendingUsers" access="public" returnType="any">
+    <cfset var pendingUsers = []>
+    <cfif structKeyExists(form, "str_keyword") and len(trim(form.str_keyword)) GT 0>
+        <cfset keyword="%" & trim(form.str_keyword) & "%">
+        <cfset pendingUsers = ormExecuteQuery(
+            "FROM user u WHERE u.cbr_status = 'P' AND (u.str_name LIKE :keyword OR u.str_phone LIKE :keyword) ORDER BY u.id",
+            { keyword = keyword },
+            { maxResults = recordsPerPage, offset = offset }
+        )>
+
+        <cfset totalPendingUsers=ormExecuteQuery(
+            "FROM user u WHERE u.cbr_status = 'P' AND (u.str_name LIKE :keyword OR u.str_phone LIKE :keyword) ORDER BY u.id",
+            { keyword = keyword }
+        )>
+
+    <cfelse>
+        <cfset pendingUsers = entityLoad("user", {cbr_status = 'P'}, "id", { maxResults = recordsPerPage, offset = offset })>
+            <cfset totalPendingUsers = ormExecuteQuery("SELECT COUNT(u.id) FROM user u WHERE u.cbr_status = 'P'", {}, true)>
+    </cfif>
+    <cfreturn pendingUsers>
+</cffunction> 
+
+<cffunction  name="getApprovedUsers" access="public" returnType="any">
+    <cfset var approvedUsers = []>
+    <cfif structKeyExists(form, "str_keyword") and len(trim(form.str_keyword)) GT 0>    
+        <cfset keyword="%" & trim(form.str_keyword) & "%">
+        <cfset approvedUsers=ormExecuteQuery(
+            "FROM user u where u.cbr_status='A' and u.userRole.id ='2' and (u.str_name LIKE :keyword OR u.str_phone LIKE :keyword) ORDER BY u.id",
+            {keyword=keyword},
+            {maxResults=recordsPerPage, offset = offset}
+        )>
+        <cfset totalApprovedUser=ormExecuteQuery(
+            "FROM user u WHERE u.cbr_status = 'A' AND (u.str_name LIKE :keyword OR u.str_phone LIKE :keyword) ORDER BY u.id",
+                { keyword = keyword }
+        )>
+    <cfelse>
+        <cfset approvedUsers=entityLoad("user",{cbr_status='A'},"id",{maxResults=recordsPerPage,offset=offset})>
+        <cfset totalApprovedUsers = ormExecuteQuery("SELECT  COUNT(u.id) FROM user u WHERE u.cbr_status = 'A'",{},true)>
+    </cfif>
+    <cfreturn approvedUsers>
 </cffunction>
 
 
-<cffunction  name="permissions" access="public" returnType="any">
-     <cfargument  name="permissionid" type="integer">
-    <cfset permissionList=entityLoad("tbl_permissions",{"int_user_id"=permissionid})>
-</cffunction>
-<cfset getPermissionOptions()>
-<cfset permissions()>
-
-<cffunction  name="getUserCounts" access="public" returnType="query">
-<cfquery name="qryUserCounts" datasource="#datasource#">
-    SELECT 
-        (SELECT COUNT(id) FROM tbl_users WHERE cbr_status = 'P') AS totalPending,
-        (SELECT COUNT(id) FROM tbl_users WHERE cbr_status = 'A') AS totalApproved
-</cfquery>
-    <cfreturn qryUserCounts> 
-</cffunction>
-<cfset getUserCounts()>
-<cfset totalPendingRecords = qryUserCounts.totalPending>
-<cfset totalApprovedRecords = qryUserCounts.totalApproved>
-<cfset totalPendingPages = Ceiling(totalPendingRecords / recordsPerPage)>
-<cfset totalApprovedPages = Ceiling(totalApprovedRecords / recordsPerPage)>
-
-<!-- Query for Pending Users -->
-<cffunction  name="getPendingUsers" access="public" returnType="query">
+<!--- <cffunction  name="getPendingUsers" access="public" returnType="query"> 
 <cfquery name="qryPendingUsers" datasource="#datasource#">
     SELECT id, str_name, str_phone, str_username, cbr_status
     FROM tbl_users
@@ -52,10 +89,10 @@
           <cfqueryparam value="#recordsPerPage#" cfsqltype="cf_sql_integer">
 </cfquery>
     <cfreturn qryPendingUsers>
-</cffunction>
-<cfset getPendingUsers()>
+</cffunction>--->
+
 <!-- Query for Approved Users -->
-<cffunction  name="getApprovedUsers"  access="public" returnType="query">
+<!--- <cffunction  name="getApprovedUsers"  access="public" returnType="query"> 
 <cfquery name="qryApprovedUsers" datasource="#datasource#">
     SELECT id, str_name, str_phone, str_username, cbr_status
     FROM tbl_users
@@ -72,4 +109,4 @@
 </cfquery>
 <cfreturn qryApprovedUsers>
 </cffunction>
-<cfset getApprovedUsers()>
+<cfset getApprovedUsers()>--->

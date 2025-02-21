@@ -16,7 +16,7 @@
 		<div class="header">
 			<img src="../img/logo.png" alt="logo" class="logo">
 			<a href="../user/approveduserprofile.cfm">Home</a>
-			<a href="../addtask.cfm">Tasks</a>
+			<a href="../addtask.cfm">Add Task</a>
 			<a href="../user/fullcontacts.cfm">Contacts</a>
 			<a href="../userlogin.cfm" class="moveright">Log out</a>
    		 </div>
@@ -46,7 +46,7 @@
 						</tr>
 
 					<tbody>
-					<cfloop array="TodaysTasks">
+					<cfloop array="TodaysTasks" index="TodaysTasks">
 					<tr>
 						<td>#TodaysTasks.getStr_task_name()#</td>
 						<td>#TodaysTasks.getStr_task_description()#</td>

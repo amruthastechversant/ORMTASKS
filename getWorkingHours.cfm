@@ -5,13 +5,8 @@
    <cfset requestBody = toString( getHttpRequestData().content )>
     <cfset requestJson = DeserializeJSON(requestBody)>
     <cfset taskId=requestJson["taskId"]>
-
-   
-   
     <cfset getLogs = entityLoad("TaskTime", {int_task_id=taskId})>
-
     <cfset result = []>
-
     <cfloop array="#getLogs#" index="log">
         <cfset arrayAppend(result, {
             "comments": log.getStr_comments(),

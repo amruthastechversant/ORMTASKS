@@ -77,7 +77,7 @@
 
 
 <!-- Function to retrieve and set user permissions -->
-<cffunction name="setUserPermissions" access="public" returnType="void">
+<!--- <cffunction name="setUserPermissions" access="public" returnType="void"> 
     <cfargument name="user_id" type="numeric" required="true">
     <cfquery name="qryUserPermissions" datasource="dsn_addressbook">
         SELECT int_permission_id
@@ -90,7 +90,7 @@
     <cfloop query="qryUserPermissions">
         <cfset ArrayAppend(SESSION.permissions, qryUserPermissions.int_permission_id)>
     </cfloop>
-</cffunction>
+</cffunction>--->
 <cfset setDefaultValues()>
 <cfset contactData = getContacts(startRecord=startRecord,recordsPerPage=recordsPerPage)>
-<cfset setUserPermissions(user_id=session.user_id)>
+<!--- <cfset setUserPermissions(user_id=session.user_id)> --->

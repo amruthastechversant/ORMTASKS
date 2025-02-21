@@ -8,8 +8,6 @@
  <cfproperty  name="int_phone_no" ormtype="string">
  <cfproperty  name="str_hobbies" ormtype="string">
  <cfproperty  name="str_address" ormtype="string">
-
-
  <cfproperty name="int_education_id" fieldtype="many-to-one" cfc="education" fkcolumn="int_education_id">
  
 </cfcomponent>

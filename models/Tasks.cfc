@@ -9,7 +9,6 @@
     <cfproperty name="recurrence_end_date" ormtype="date">
     <cfproperty name="estimate_hours" ormtype="integer">
     <cfproperty name="created_at" ormtype="timestamp">
-
     <cfproperty name="int_task_priority" fieldtype="many-to-one" cfc="priority" fkcolumn="int_task_priority">
     <cfproperty name="int_task_status" fieldtype="many-to-one" cfc="status" fkcolumn="int_task_status">
 

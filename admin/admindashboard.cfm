@@ -43,40 +43,37 @@
                 </tr>
             </thead>
             <tbody>
-                <cfif tblUser.recordCount>
-                    <cfloop array="tblUser" index="user">
+                <cfif arrayLen(variables.qryPendingUsers)>
+                    <cfloop array="#variables.qryPendingUsers#" index="variables.user">
                         <tr>
-                            <td>#user.getId()#</td>
-                            <td>#user.getStr_name()#</td>
-                            <td>#user.getStr_phone()#</td>
-                            <td>#user.getStr_username()#</td>
+                            <td>#variables.user.getId()#</td>
+                            <td>#variables.user.getStr_name()#</td>
+                            <td>#variables.user.getStr_phone()#</td>
+                            <td>#variables.user.getStr_username()#</td>
                             <td>
-                                <!--- <cfquery name="qryUserPermissions" datasource="#datasource#">
-                                   SELECT int_permission_id FROM tbl_user_permissions
-                                     WHERE int_user_id = <cfqueryparam value="#id#" cfsqltype="cf_sql_integer">
-                                 </cfquery>--->
-                                
-                                <cfset variables.int_user_permission_list = valuelist(qryUserPermissions.int_permission_id)>
-
+                                <cfset userPermissions=entityLoad("userpermissions",{user=variables.user})>
+                                <cfloop array="#userPermissions#" index="userpermission">
+                                    <cfset arrayAppend(userPermissions,userpermission.getPermission().getInt_permission_id())>
+                                </cfloop>
                                 <form action="savepermission.cfm" method="post" class="text-center">
-                                    <cfloop array="permissionList" index="permission">
+                                    <cfloop array="#permissionOptions#" index="permission">
                                         <input type="checkbox" class="form-check-input" name="int_permission_id_list" 
                                             value="#permission.getInt_permission_id()#" 
-                                            id="int_permission_id_list_#qryPendingUsers.Id#"
-                                            <cfif ListContains("#variables.int_user_permission_list#", qryGetPermissionOptions.permissionid)>checked</cfif>>
-                                        <label for="int_permission_id_list_#qryPendingUsers.Id#" class="form-check-label">
-                                            #qryGetPermissionOptions.permission#
+                                            id="int_permission_id_list_#permission.getInt_permission_id()#"
+                                            <cfif ArrayFind(userPermissions, permission.getInt_permission_id()) GT 0>checked</cfif>>
+                                        <label for="int_permission_id_list_#variables.user.getId()#" class="form-check-label">
+                                            #permission.getStr_permissions()#
                                         </label>
                                     </cfloop>
                                     <div class="d-inline-block">
-                                        <input type="hidden" name="id" value="#qryPendingUsers.Id#">
+                                        <input type="hidden" name="id" value="#user.getId()#">
                                         <button type="submit" class="btn btn-primary btn-sm px-2 py-1">Save</button>
                                     </div>
-                                </form>
+                                 </form>
                             </td>
                             <td>
                                 <form action="approveuser.cfm" method="post" style="display: inline;">
-                                    <input type="hidden" name="id" value="#id#">
+                                    <input type="hidden" name="id" value="#user.getId()#">
                                     <button type="submit" class="btn btn-success btn-lg">Approve</button>
                                 </form>
                             </td>
@@ -93,23 +90,23 @@
         <nav aria-label="Page navigation">
             <ul class="pagination">
                 <!-- Previous Button -->
-                <cfif currentPage GT 1>
+                <cfif variables.variables.currentPage GT 1>
                     <li class="page-item">
-                        <a class="page-link" href="admindashboard.cfm?currentPage=#currentPage - 1#" aria-label="Previous">Previous</a>
+                        <a class="page-link" href="admindashboard.cfm?variables.currentPage=#variables.currentPage - 1#" aria-label="Previous">Previous</a>
                     </li>
                 </cfif>
 
                 <!-- Page Numbers -->
                 <cfloop index="i" from="1" to="#totalPendingPages#">
-                    <li class="page-item <cfif i EQ currentPage>active</cfif>">
-                        <a class="page-link" href="admindashboard.cfm?currentPage=#i#">#i#</a>
+                    <li class="page-item <cfif i EQ variables.currentPage>active</cfif>">
+                        <a class="page-link" href="admindashboard.cfm?variables.currentPage=#i#">#i#</a>
                     </li>
                 </cfloop>
 
                 <!-- Next Button -->
-                <cfif currentPage LT totalPendingPages>
+                <cfif variables.currentPage LT totalPendingPages>
                     <li class="page-item">
-                        <a class="page-link" href="admindashboard.cfm?currentPage=#currentPage + 1#" aria-label="Next">Next</a>
+                        <a class="page-link" href="admindashboard.cfm?variables.currentPage=#variables.currentPage + 1#" aria-label="Next">Next</a>
                     </li>
                 </cfif>
             </ul>
@@ -130,32 +127,31 @@
                 </tr>
             </thead>
             <tbody>
-                <cfif qryApprovedUsers.recordCount>
-                    <cfloop query="qryApprovedUsers">
+                <cfif arrayLen(variables.qryApprovedUsers)>
+                    <cfloop array="#variables.qryApprovedUsers#" index="variables.user">
                         <tr>
-                            <td>#id#</td>
-                            <td><a href="userTaskDetails.cfm?userId=#id#" class="text-decoration-none">#str_name#</a></td>
-                            <td>#str_phone#</td>
-                            <td>#str_username#</td>
+                            <td>#variables.user.getId()#</td>
+                            <td></td>
+<!---                             <td><a href="userTaskDetails.cfm?userId=#id#" class="text-decoration-none">#str_name#</a></td> --->
+                            <td>#variables.user.getStr_phone()#</td>
+                            <td>#variables.user.getStr_username()#</td>
                             <td>
-                                <cfquery name="qryUserPermissions" datasource="#datasource#">
-                                    SELECT int_permission_id FROM tbl_user_permissions
-                                    WHERE int_user_id = <cfqueryparam value="#id#" cfsqltype="cf_sql_integer">
-                                </cfquery>
-                                <cfset variables.int_user_permission_list = valuelist(qryUserPermissions.int_permission_id)>
-
+                                <cfset userPermissions=entityLoad("userpermissions",{user=variables.user})>
+                                <cfloop array="#userPermissions#" index="userpermission">
+                                    <cfset arrayAppend(userPermissions,userpermission.getPermission().getInt_permission_id())>
+                                </cfloop>
                                 <form action="savepermission.cfm" method="post" style="display: inline;">
-                                    <cfloop query="qryGetPermissionOptions">
+                                    <cfloop array="#permissionOptions#" index="permission">
                                         <input type="checkbox" class="form-check-input" name="int_permission_id_list" 
-                                            value="#qryGetPermissionOptions.permissionid#" 
-                                            id="int_permission_id_list_#qryApprovedUsers.Id#"
-                                            <cfif ListContains("#variables.int_user_permission_list#", qryGetPermissionOptions.permissionid)>checked</cfif>>
-                                        <label for="int_permission_id_list_#qryApprovedUsers.Id#" class="form-check-label">
-                                            #qryGetPermissionOptions.permission#
+                                            value="#permission.getInt_permission_id()#" 
+                                            id="int_permission_id_list_#permission.getInt_permission_id()#"
+                                            <cfif ArrayFind(userPermissions,permission.getInt_permission_id() ) GT 0>checked</cfif>>
+                                        <label for="int_permission_id_list_#user.getId()#" class="form-check-label">
+                                            #permission.getStr_permissions()#
                                         </label>
                                     </cfloop>
                                     <div class="text-end">
-                                        <input type="hidden" name="id" value="#qryApprovedUsers.Id#">
+                                        <input type="hidden" name="id" value="#user.getId()#">
                                         <button type="submit" class="btn btn-primary btn-sm">Save</button>
                                     </div>
                                 </form>
@@ -176,23 +172,23 @@
         <nav aria-label="Page navigation">
             <ul class="pagination">
                 <!-- Previous Button -->
-                <cfif currentPage GT 1>
+                <cfif variables.variables.currentPage GT 1>
                     <li class="page-item">
-                        <a class="page-link" href="admindashboard.cfm?currentPage=#currentPage - 1#" aria-label="Previous">Previous</a>
+                        <a class="page-link" href="admindashboard.cfm?variables.variables.currentPage=#variables.variables.currentPage - 1#" aria-label="Previous">Previous</a>
                     </li>
                 </cfif>
 
                 <!-- Page Numbers -->
                 <cfloop index="i" from="1" to="#totalApprovedPages#">
-                    <li class="page-item <cfif i EQ currentPage>active</cfif>">
-                        <a class="page-link" href="admindashboard.cfm?currentPage=#i#">#i#</a>
+                    <li class="page-item <cfif i EQ variables.variables.currentPage>active</cfif>">
+                        <a class="page-link" href="admindashboard.cfm?variables.variables.currentPage=#i#">#i#</a>
                     </li>
                 </cfloop>
 
                 <!-- Next Button -->
-                <cfif currentPage LT totalApprovedPages>
+                <cfif variables.variables.currentPage LT totalApprovedPages>
                     <li class="page-item">
-                        <a class="page-link" href="admindashboard.cfm?currentPage=#currentPage + 1#" aria-label="Next">Next</a>
+                        <a class="page-link" href="admindashboard.cfm?variables.variables.currentPage=#variables.variables.currentPage + 1#" aria-label="Next">Next</a>
                     </li>
                 </cfif>
             </ul>

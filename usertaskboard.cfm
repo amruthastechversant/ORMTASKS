@@ -1,5 +1,7 @@
 <cfinclude template="usertaskboardaction.cfm">
-
+<cfif NOT structKeyExists(session, "user_id") OR session.user_id EQ "" OR session.user_id IS 0>
+    <cflocation url="../loginasadmin.cfm" addtoken="false">
+</cfif>
 <!--- UserTaskBoardAction --->
 <!--- userTaskBoardAction --->
 <cfoutput>
@@ -39,11 +41,34 @@
                                     </strong>
                                     <i class="bi-three-dots-vertical text-white " style="cursor: pointer;"  data-task-id="#task.getInt_task_id()#" data-user-id="#task.getInt_user_id()#"  data-bs-toggle="modal" data-bs-target="##estimateModal"></i>
                                 </div> 
-
                             </div>
-                                <div class="card-body">
-                                    <h4 class="card-title">#task.getInt_task_id()#</h4>
-                                    <p class="card-text"><h2>#task.getStr_task_name()#</h2></p>
+                            <div class="card-body">
+                                <h4 class="card-title">#task.getInt_task_id()#</h4>
+                                <p class="card-text"><h2>#task.getStr_task_name()#</h2></p>
+                                <div class="alert-container position-relative  w-75 mb-2">
+                            <!--- position-relative  w-75 mb-2--->
+                                    <cfset alertMessage = getDueDateAlert(dueDate=task.getDt_task_due_date())>
+                                        <cfif alertMessage NEQ "">
+                                            <p class="alert alert-danger me-2" >
+                                                #alertMessage#
+                                            </p>
+                                        </cfif>
+                                        <cfset working_hours="0">
+                                        <cfset taskhoursResult = taskhours(working_hours = working_hours, int_task_id = task.getInt_task_id())>
+                                        <cfif taskhoursResult.alertMessage NEQ "">
+                                            <p class=" alert alert-danger me-2 ">
+                                                #taskhoursResult.alertMessage#
+                                            </p> 
+                                        </cfif>
+                                        <cfset taskId=task.getInt_task_id()>
+                                        <cfif structKeyExists(session, "successMsg") AND structKeyExists(session.successMsg, "#tasks.int_task_id#")>
+                                            <p class="alert alert-success me-2" role="alert">
+                                                #session.successMsg[tasks.int_task_id]#
+                                            </p>
+                                            <cfset structDelete(session.successMsg, "#tasks.int_task_id#")>
+                                        </cfif>
+                                </div>
+                                    <div class="card-body">
                                     <p class="card-text"><strong>Description:</strong> #task.getStr_task_description()#</p>
                                     <p class="card-text"><strong>Due Date:</strong> #DateFormat(task.getDt_task_due_date(), "mm/dd/yyyy")#</p>
                                     <p class="card-text"><strong>Status:</strong> #task.getInt_task_status().getStatus()#</p>
@@ -78,37 +103,37 @@
                                             #NumberFormat(time, "0.00")#
                                             </span>
                                         </p>
+                                    </div>
                                 </div>
-                        </div>
+                            </div>
                     </div>
                 </cfloop>
             </cfif>
         </div>
     </div>
-
     <div class="d-flex justify-content-end">
     <!-- Pagination controls -->
         <cfoutput>
             <nav aria-label="Page navigation">
                 <ul class="pagination">
                     <!-- Previous Button -->
-                    <cfif currentPage GT 1>
+                    <cfif variables.currentPage GT 1>
                         <li class="page-item">
-                            <a class="page-link" href="usertaskboard.cfm?currentPage=#currentPage - 1#" aria-label="Previous">Previous</a>
+                            <a class="page-link" href="usertaskboard.cfm?variables.currentPage=#variables.currentPage - 1#" aria-label="Previous">Previous</a>
                         </li>
                     </cfif>
 
                     <!-- Page Numbers -->
                     <cfloop index="i" from="1" to="#totalPages#">
-                        <li class="page-item <cfif i EQ currentPage>active</cfif>">
-                            <a class="page-link" href="usertaskboard.cfm?currentPage=#i#">#i#</a>
+                        <li class="page-item <cfif i EQ variables.currentPage>active</cfif>">
+                            <a class="page-link" href="usertaskboard.cfm?variables.currentPage=#i#">#i#</a>
                         </li>
                     </cfloop>
 
                     <!-- Next Button -->
-                    <cfif currentPage LT totalPages>
+                    <cfif variables.currentPage LT totalPages>
                         <li class="page-item">
-                            <a class="page-link" href="usertaskboard.cfm?currentPage=#currentPage + 1#" aria-label="Next">Next</a>
+                            <a class="page-link" href="usertaskboard.cfm?variables.currentPage=#variables.currentPage + 1#" aria-label="Next">Next</a>
                         </li>
                     </cfif>
                 </ul>
@@ -153,11 +178,9 @@
         <div class="modal fade" id="selectedTaskIdDisplayModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                   
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalLabel">Working Hours</h5>
                         </div>
-                       
                         <div class="modal-body" >
                             <div class="mb-3" id="selectedTaskIdDisplay">
                             </div>
@@ -165,20 +188,12 @@
                         <div class="d-flex justify-content-end ">
                             <button type="button" class="btn btn-secondary me-2 mb-2" data-bs-dismiss="modal">Close</button>
                         </div>
-                    </form>
                 </div>
             </div>
         </div>
-          
-        
-    
-        
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Bootstrap 5 -->
-
-
     <script src="admin/workhours.js"></script>
 </body>
 </cfoutput>

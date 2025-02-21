@@ -10,7 +10,7 @@
 </head>
 <body>
 <div class="header">
-        <img src="../img/logo.png" alt="logo" class="logo">
+        <img src="img/logo.png" alt="logo" class="logo">
         <a href="admin/homepage.cfm">Home</a>
        <a href="usertaskboard.cfm">Tasks</a>
         <a href="user/fullcontacts.cfm">Contacts</a>

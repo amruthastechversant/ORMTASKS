@@ -24,36 +24,29 @@
 </cfif>
 
 
+<cfset user=entityLoadByPK("user",int_user_id)>
 
-<!-- Function Definition -->
-<cffunction name="updateUserPermissions" access="public" returnType="void" output="false">
-    <cfargument name="int_user_id" type="numeric" required="true">
-    <cfargument name="permissions" type="array" required="true">
-    <cfargument name="datasource" type="string" required="true">
+<cfif not isObject(user)>
+    <cflocation  url="InvalidUserId">
+</cfif>
 
-    <!-- Delete Existing Permissions -->
-    <cfquery name="qryDeletePermission" datasource="#arguments.datasource#">
-        DELETE FROM tbl_user_permissions
-        WHERE int_user_id = <cfqueryparam value="#arguments.int_user_id#" cfsqltype="cf_sql_integer">
-    </cfquery>
+<cfset int_user_id=int(int_user_id)>
+<cfset userentity=entityLoadByPK("user", int_user_id)>
+<cfset existingPermissions = entityLoad("userpermissions", {user: userentity})>
+<cfloop array="#existingPermissions#" index="perm">
+    <cfset entityDelete(perm)>
+</cfloop>
 
-    <!-- Insert New Permissions -->
-    <cfif arrayLen(arguments.permissions) GT 0>
-        <cfloop index="i" from="1" to="#arrayLen(arguments.permissions)#">
-            <cfif len(arguments.permissions[i]) GT 0>
-                <cfquery name="qryUserPermissions" datasource="#arguments.datasource#">
-                    INSERT INTO tbl_user_permissions (int_user_id, int_permission_id)
-                    VALUES (
-                        <cfqueryparam value="#arguments.int_user_id#" cfsqltype="cf_sql_integer">,
-                        <cfqueryparam value="#arguments.permissions[i]#" cfsqltype="cf_sql_varchar">
-                    )
-                </cfquery>
-            </cfif>
-        </cfloop>
+<cfloop array="#permissions#" index="permId">
+    <cfset permission = entityLoadByPK("permissions", permId)>
+    <cfif isObject(permission)>
+        <cfset newPermission = entityNew("userpermissions")>
+        <cfset newPermission.setUser(user)>
+        <cfset newPermission.setPermission(permission)>
+        <cfset entitySave(newPermission)>
     </cfif>
-</cffunction>
-<!-- Call the Function -->
-<cfset updateUserPermissions(int_user_id=int_user_id, permissions=permissions, datasource=datasource)>
+</cfloop>
+
 
 <!-- Redirect to Admin Dashboard -->
 <cflocation url="admindashboard.cfm" addtoken="false">

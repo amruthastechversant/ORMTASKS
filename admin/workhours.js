@@ -5,7 +5,7 @@
             keyboard: false
         });
 
-        var modalElement = document.getElementById('selectedTaskIdDisplay');
+        var modalElement = document.getElementById('selectedTaskIdDisplayModal');
         var modalElement = document.getElementById('estimateModal');
 
         modalElement.addEventListener('show.bs.modal', function (event) {
@@ -26,8 +26,6 @@
 
     });
 
-
-
     setTimeout(function () {
         const successMessage = document.getElementById('successMessage');
         if (successMessage) {
@@ -41,9 +39,6 @@
             var taskId = this.getAttribute('data-task-id');
             
            // document.getElementById('selectedTaskIdDisplay').querySelector('#selectedTaskId').textContent = 'Task iD: ' + taskId;
-
-
-           
             fetch('getWorkingHours.cfm', {
                 method: 'POST',
                 headers: {

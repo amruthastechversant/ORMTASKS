@@ -6,7 +6,6 @@
     <cfproperty name="str_phone" type="string">
     <cfproperty name="str_username" type="string">
     <cfproperty name="str_password" type="string">
-<!---     <cfproperty name="int_user_role_id" type="integer"> --->
     <cfproperty name="cbr_status" type="string">
     <cfproperty name="userRole" cfc="userRole" fieldtype="many-to-one" fkcolumn="int_user_role_id">
 </cfcomponent>

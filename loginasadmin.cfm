@@ -7,30 +7,22 @@ saveContacts()--->
 <cfset session.error_msg="">
 </cffunction>
 
-
 <cffunction  name="getFormValues" access="public" returnType="void">
     <cfargument  name="username" type="string" required="true">
     <cfargument  name="password" type="string" required="true">
     <cfif structKeyExists(form, "login")>
         <cfset var admin =entityLoad("user",{str_username=arguments.username,str_password=arguments.password,cbr_status='A'})>
-    
         <cfif arraylen(admin)>
-            <cfdump  var="#admin#">
             <cfset admin[1].getUserRole().getStr_user_role() EQ "admin">
-
             <cfset session.adminid=admin[1].getId()>
             <cfset session.role=admin[1].getUserRole().getStr_user_role()>
             <cfset session.str_username=admin[1].getStr_username()>
             <cflocation  url="admin/admindashboard.cfm">
-
         <cfelse>
             <cfset session.error_msg="invalid credentials">
-
         </cfif>
-
         <cfelse>
             <cfset session.error_msg="incorrect username and password">
-
     </cfif>
 
 </cffunction>
@@ -57,7 +49,7 @@ saveContacts()--->
            <button type="button" class="btn btn-info" onclick="window.location.href='loginasadmin.cfm'" >ADMIN</button>
         </div>
         
-     <div class="errordiv text-danger text-center"> #session.error_msg#</div>
+    <div class="errordiv text-danger text-center"> #session.error_msg#</div>
         <form action="loginasadmin.cfm" method="post">
             <div class="container">
                 <div class="logintble col-lg-4 mx-auto"  >
@@ -72,7 +64,6 @@ saveContacts()--->
                     <div class="mb-3 col-auto">
                         <input type="submit" value="LOGIN" id="submit" class="userlogin" name="login">
                     </div>
-                    
                 </div>
             </div>
         </form>
